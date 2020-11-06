@@ -1,0 +1,87 @@
+{
+  "name": "codelity-grpc-trigger",
+  "type": "flogo:trigger",
+  "version": "0.1.0",
+  "title": "Codelity gRPC Trigger",
+  "description": "gRPC Trigger",
+  "ref":"github.com/codelity-co/flogo-grpc-trigger",
+  "homepage": "https://github.com/codelity-co/flogo-grpc-trigger",
+  "settings": [
+    {
+      "name": "port",
+      "type": "int",
+      "required": true,
+      "description": "The port to listen on"
+    },
+    {
+      "name": "protoName",
+      "type": "string",
+      "required": true,
+      "description": "The name of the proto file"
+    },
+    {
+      "name": "protoFile",
+      "type": "string",
+      "description": "The content of the proto file"
+    },
+    {
+      "name":"enableTLS",
+      "type":"boolean",
+      "value": false,
+      "description": "true - To enable TLS (Transport Layer Security), false - No TLS security"
+    },
+    {
+      "name": "serverCert",
+      "type": "string",
+      "description": "Server certificate file in PEM format. Need to provide file name along with path. Path can be relative to gateway binary location."
+    },
+    {
+      "name": "serverKey",
+      "type": "string",
+      "description": "Server private key file in PEM format. Need to provide file name along with path. Path can be relative to gateway binary location."
+    }
+  ],
+  "output": [
+    {
+      "name": "params",
+      "type": "object",
+      "description": "Request params"
+    },
+    {
+      "name": "grpcData",
+      "type": "object",
+      "description": "HTTP request payload"
+    },
+    {
+      "name": "content",
+      "type": "any",
+      "description": "gRPC Method parameters"
+    }
+  ],
+  "reply": [
+    {
+      "name": "code",
+      "type": "integer",
+      "description": "Status code"
+    },
+    {
+      "name": "data",
+      "type": "any",
+      "description": "data"
+    }
+  ],
+  "handler": {
+    "settings": [
+      {
+        "name": "serviceName",
+        "type": "string",
+        "description": "Name of the service"
+      },
+      {
+        "name": "methodName",
+        "type": "string",
+        "description": "Name of the method"
+      }
+    ]
+  }
+}
