@@ -1,8 +1,8 @@
 {
-  "name": "codelity-grpc-trigger",
+  "name": "flogo-grpc-trigger",
   "type": "flogo:trigger",
   "version": "0.1.0",
-  "title": "Codelity gRPC Trigger",
+  "title": "Codelity Flogo gRPC Trigger",
   "description": "gRPC Trigger",
   "ref":"github.com/codelity-co/flogo-grpc-trigger",
   "homepage": "https://github.com/codelity-co/flogo-grpc-trigger",
