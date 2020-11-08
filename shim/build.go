@@ -532,16 +532,6 @@ func main() {
 		}
 	}
 
-	gitsubmodulePath = filepath.Join(appPath, "..", "..", ".gitsubmodule")
-	if _, err := os.Stat(gitsubmodulePath); err == nil {
-		err = util.ExecCmd(exec.Command("git", "submodule", "update", "--init"), project.SrcDir() + "/..")
-		if err != nil {
-			return false, err
-		}
-
-	}
-
-
 	log.Printf("appPath has been set to: %s\n", appPath)
 
 	// Read the flogo.json file to get the proto name and proto content
