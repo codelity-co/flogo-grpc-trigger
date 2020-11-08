@@ -567,7 +567,7 @@ func main() {
 			} else {
 				// text box
 				protoFileName = settings["protoName"].(string) + ".proto"
-				protoContent, err = ioutil.ReadFile(filepath.Join("..", settings["protoFile"].(string)))
+				protoContent, err = ioutil.ReadFile(settings["protoFile"].(string))
 				if err != nil {
 					panic(err)
 				}
