@@ -566,6 +566,7 @@ func main() {
 				break
 			} else {
 				// text box
+				fmt.Println(os.Getwd())
 				protoFileName = settings["protoName"].(string) + ".proto"
 				protoContent, err = ioutil.ReadFile(settings["protoFile"].(string))
 				if err != nil {
