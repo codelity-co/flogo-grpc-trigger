@@ -557,12 +557,12 @@ func main() {
 
 				// decode protoFile content
 				protoContentValue := protoFile["content"].(string)
-				index := strings.IndexAny(protoContentValue, ",")
-				if index > -1 {
-					protoContent, _ = base64.StdEncoding.DecodeString(protoContentValue[index+1:])
-				} else {
-					panic("Error in proto content")
-				}
+				// index := strings.IndexAny(protoContentValue, ",")
+				// if index > -1 {
+				// 	protoContent, _ = base64.StdEncoding.DecodeString(protoContentValue[index+1:])
+				// } else {
+				// 	panic("Error in proto content")
+				// }
 				break
 			} else {
 				// text box
