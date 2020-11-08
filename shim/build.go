@@ -555,7 +555,7 @@ func main() {
 				protoFileName = protoFile["filename"].(string)
 
 				// decode protoFile content
-				protoContent := protoFile["content"].(string)
+				protoContent = protoFile["content"].(string)
 				// index := strings.IndexAny(protoContentValue, ",")
 				// if index > -1 {
 				// 	protoContent, _ = base64.StdEncoding.DecodeString(protoContentValue[index+1:])
