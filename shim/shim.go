@@ -22,7 +22,7 @@ var (
 )
 
 func main() {
-
+	
 	if cp == nil {
 		// Use default config provider
 		cp = app.DefaultConfigProvider()

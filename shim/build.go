@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/protoc-gen-go/generator"
+	"github.com/project-flogo/cli/util"
 )
 
 const (
@@ -530,6 +531,16 @@ func main() {
 			log.Println(fmt.Errorf("Cannot find flogo.json file: %s", err.Error()))
 		}
 	}
+
+	gitsubmodulePath = filepath.Join(appPath, "..", "..", ".gitsubmodule")
+	if _, err := os.Stat(gitsubmodulePath); err == nil {
+		err = util.ExecCmd(exec.Command("git", "submodule", "update", "--init"), project.SrcDir() + "/..")
+		if err != nil {
+			return false, err
+		}
+
+	}
+
 
 	log.Printf("appPath has been set to: %s\n", appPath)
 
