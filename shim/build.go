@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/protoc-gen-go/generator"
-	"github.com/project-flogo/cli/util"
 )
 
 const (
