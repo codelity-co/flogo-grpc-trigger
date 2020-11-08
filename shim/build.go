@@ -567,7 +567,10 @@ func main() {
 			} else {
 				// text box
 				protoFileName = settings["protoName"].(string) + ".proto"
-				protoContent = []byte(settings["protoFile"].(string))
+				protoContent, err = ioutil.ReadFile(filepath.Join(appPath, "..", settings["protoFile"].(string)))
+				if err != nil {
+					panic(err)
+				}
 				break
 			}
 		}
@@ -652,7 +655,8 @@ func generatePbFiles() error {
 	}
 
 	// execute protoc command
-	err = Exec("protoc", "-I", appPath, protoPath, "--go_out=plugins=grpc,import_path=main:"+appPath)
+	// err = Exec("protoc", "-I", appPath, protoPath, "--go_out=plugins=grpc,import_path=main:"+appPath)
+	err = Exec("protoc", "-I", appPath, protoPath, "--go_out="+appPath)
 	if err != nil {
 		return err
 	}
