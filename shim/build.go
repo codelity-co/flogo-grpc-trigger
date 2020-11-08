@@ -568,25 +568,21 @@ func main() {
 		}
 	}
 
-	fmt.Println("+")
 	// Create a temp proto file with the protoContent
 	protoPath = filepath.Join(appPath, protoFileName)
 	fmt.Printf("protoPath:[%s] protoFileName:[%s]\n", protoPath, protoFileName)
 
-	fmt.Println("++")
 	err = ioutil.WriteFile(protoPath, protoContent, 0644)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("+++")
 	// Generate support files
 	err = GenerateSupportFiles(appPath)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("++++")
 	// cleanup build.go, shim_support.go and <fileName>.proto
 	os.Remove(filepath.Join(appPath, "build.go"))
 	os.Remove(filepath.Join(appPath, "shim_support.go"))
