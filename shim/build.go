@@ -208,6 +208,8 @@ func (s *serviceImpl{{$protoName}}{{$serviceName}}{{$option}}) {{.MethodName}}(b
 
 {{- end }}
 
+func (s *serviceImpl{{$protoName}}{{$serviceName}}{{$option}}) mustEmbedUnimplementedHealthzServiceServer() {}
+
 func (s *serviceImpl{{$protoName}}{{$serviceName}}{{$option}}) ServiceInfo() *servInfo.ServiceInfo {
 	return s.serviceInfo
 }
