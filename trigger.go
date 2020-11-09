@@ -165,6 +165,7 @@ func (t *Trigger) Start() error {
 	protoName := t.settings.ProtoName
 	protoName = strings.Split(protoName, ".")[0]
 
+	t.Logger.Info(ServiceRegistery.ServerServices)
 	// Register each serviceName + protoName
 	if len(ServiceRegistery.ServerServices) != 0 {
 		for k, service := range ServiceRegistery.ServerServices {

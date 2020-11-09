@@ -22,7 +22,7 @@ var (
 )
 
 func main() {
-	
+	fmt.Println("***** Starting Shim...")
 	if cp == nil {
 		// Use default config provider
 		cp = app.DefaultConfigProvider()
