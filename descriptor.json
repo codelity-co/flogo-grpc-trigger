@@ -1,7 +1,6 @@
 {
   "name": "flogo-grpc-trigger",
   "type": "flogo:trigger",
-  "shim": "plugin",
   "version": "0.1.0",
   "title": "Codelity Flogo gRPC Trigger",
   "description": "gRPC Trigger",
