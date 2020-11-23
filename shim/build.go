@@ -602,6 +602,12 @@ func GenerateSupportFiles(path string) error {
 		return err
 	}
 
+	log.Println("Generating grpc files...")
+	err := generateGrpcFiles()
+	if err != nil {
+		return err
+	}
+
 	log.Println("Getting proto data...")
 	pdArr, err := getProtoData()
 	if err != nil {
@@ -649,8 +655,22 @@ func generatePbFiles() error {
 	}
 
 	// execute protoc command
-	// err = Exec("protoc", "-I", appPath, protoPath, "--go_out=plugins=grpc,import_path=main:"+appPath)
 	err = Exec("protoc", "-I", appPath, protoPath, "--go_out="+appPath)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// generatePbFiles generates stub file based on given proto
+func generateGrpcFiles() error {
+	_, err := exec.LookPath("protoc")
+	if err != nil {
+		return fmt.Errorf("Protoc is not available: %s", err.Error())
+	}
+
+	// execute protoc command
+	err = Exec("protoc", "-I", appPath, protoPath, "--go-grpc_out="+appPath)
 	if err != nil {
 		return err
 	}
