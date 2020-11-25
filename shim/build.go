@@ -777,7 +777,7 @@ func generateServiceImplFile(pdArr []ProtoData, option string) error {
 		}
 		defer f.Close()
 		pd.Option = option
-		if strings.Compare(option, "server") == 0 {
+		if strings.Compare(option, "grpcserver") == 0 {
 			err = registryServerTemplate.Execute(f, pd)
 		} else {
 			err = registryClientTemplate.Execute(f, pd)
