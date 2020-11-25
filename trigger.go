@@ -208,7 +208,8 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 	t.Logger.Debug("CallHandler method invoked")
 
 	params := make(map[string]interface{})
-	var content interface{}
+	var content map[string]interface{}
+	
 	m := jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	// blocking the code for streaming requests
 	if grpcData["contextData"] != nil {
@@ -261,7 +262,7 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 		out := &Output{
 			Params:   params,
 			GrpcData: grpcData,
-			ReqDataRawBytes:  content,
+			ProtobufRequestMap:  content,
 		}
 
 		t.Logger.Debug("Dispatch Found for ", handler.settings.ServiceName+"_"+handler.settings.MethodName)

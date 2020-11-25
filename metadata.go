@@ -61,7 +61,7 @@ type HandlerSettings struct {
 type Output struct {
 	Params          map[string]interface{} `md:"params"`
 	GrpcData        map[string]interface{} `md:"grpcData"`
-	ReqDataRawBytes interface{}            `md:"reqDataRawBytes"`
+	ProtobufRequestMap map[string]interface{} `md:"protobufRequestMap"`
 }
 
 type Reply struct {
@@ -73,7 +73,7 @@ func (o *Output) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"params":          o.Params,
 		"grpcData":        o.GrpcData,
-		"reqDataRawBytes": o.ReqDataRawBytes,
+		"protobufRequestMap": o.ProtobufRequestMap,
 	}
 }
 
@@ -87,8 +87,10 @@ func (o *Output) FromMap(values map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
-	o.ReqDataRawBytes = values["reqDataRawBytes"]
-
+	o.ProtobufRequestMap, err = coerce.ToObject(values["protobufRequestMap"])
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
