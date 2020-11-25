@@ -2,7 +2,7 @@
   "name": "flogo-grpc-trigger",
   "type": "flogo:trigger",
   "shim": "plugin",
-  "version": "0.1.0",
+  "version": "0.3.1",
   "title": "Codelity Flogo gRPC Trigger",
   "description": "gRPC Trigger",
   "ref":"github.com/codelity-co/flogo-grpc-trigger",
@@ -54,7 +54,7 @@
       "description": "gRPC request data"
     },
     {
-      "name": "reqDataBytes",
+      "name": "reqDataRawBytes",
       "type": "any",
       "description": "gRPC request data raw bytes"
     }
