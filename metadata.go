@@ -19,7 +19,7 @@ func (s *Settings) FromMap(values map[string]interface{}) error {
 	var (
 		err error
 	)
-	s.Port, err = coerce.ToInt(values["port"]);
+	s.Port, err = coerce.ToInt(values["port"])
 	if err != nil {
 		return err
 	}
@@ -59,9 +59,9 @@ type HandlerSettings struct {
 }
 
 type Output struct {
-	Params   map[string]interface{} `md:"params"`
-	GrpcData map[string]interface{} `md:"grpcData"`
-	ReqDataRawBytes  interface{}            `md:"reqDataRawBytes"`
+	Params          map[string]interface{} `md:"params"`
+	GrpcData        map[string]interface{} `md:"grpcData"`
+	ReqDataRawBytes interface{}            `md:"reqDataRawBytes"`
 }
 
 type Reply struct {
@@ -71,9 +71,9 @@ type Reply struct {
 
 func (o *Output) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"params":   o.Params,
-		"grpcData": o.GrpcData,
-		"reqDataRawBytes":  o.ReqDataRawBytes,
+		"params":          o.Params,
+		"grpcData":        o.GrpcData,
+		"reqDataRawBytes": o.ReqDataRawBytes,
 	}
 }
 
