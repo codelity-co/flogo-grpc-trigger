@@ -603,7 +603,7 @@ func GenerateSupportFiles(path string) error {
 	}
 
 	log.Println("Generating grpc files...")
-	err := generateGrpcFiles()
+	err = generateGrpcFiles()
 	if err != nil {
 		return err
 	}
