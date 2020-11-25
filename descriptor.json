@@ -46,17 +46,17 @@
     {
       "name": "params",
       "type": "object",
-      "description": "Request params"
+      "description": "gRPC Request params"
     },
     {
-      "name": "grpcData",
+      "name": "reqData",
       "type": "object",
-      "description": "HTTP request payload"
+      "description": "gRPC request data"
     },
     {
-      "name": "content",
+      "name": "reqDataBytes",
       "type": "any",
-      "description": "gRPC Method parameters"
+      "description": "gRPC request data raw bytes"
     }
   ],
   "reply": [

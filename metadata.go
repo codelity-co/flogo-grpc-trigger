@@ -61,7 +61,7 @@ type HandlerSettings struct {
 type Output struct {
 	Params   map[string]interface{} `md:"params"`
 	GrpcData map[string]interface{} `md:"grpcData"`
-	Content  interface{}            `md:"content"`
+	ReqDataRawBytes  interface{}            `md:"reqDataRawBytes"`
 }
 
 type Reply struct {
@@ -73,7 +73,7 @@ func (o *Output) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"params":   o.Params,
 		"grpcData": o.GrpcData,
-		"content":  o.Content,
+		"reqDataRawBytes":  o.ReqDataRawBytes,
 	}
 }
 
@@ -87,7 +87,7 @@ func (o *Output) FromMap(values map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
-	o.Content = values["content"]
+	o.ReqDataRawBytes = values["reqDataRawBytes"]
 
 	return nil
 }

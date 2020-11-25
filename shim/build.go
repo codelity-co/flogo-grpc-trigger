@@ -74,8 +74,8 @@ func (s *serviceImpl{{$protoName}}{{$serviceName}}{{$option}}) {{.MethodName}}(c
 	grpcData := make(map[string]interface{})
 	grpcData["methodName"] = methodName
 	grpcData["serviceName"] = serviceName
-	grpcData["contextdata"] = ctx
-	grpcData["reqdata"] = req
+	grpcData["contextData"] = ctx
+	grpcData["reqData"] = req
 
 	_, replyData, err := s.trigger.CallHandler(grpcData)
 

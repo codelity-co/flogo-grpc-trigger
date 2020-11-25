@@ -211,9 +211,9 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 	var content interface{}
 	m := jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	// blocking the code for streaming requests
-	if grpcData["contextdata"] != nil {
+	if grpcData["contextData"] != nil {
 		// getting values from inputrequestdata and mapping it to params which can be used in different services like HTTP pathparams etc.
-		s := reflect.ValueOf(grpcData["reqdata"]).Elem()
+		s := reflect.ValueOf(grpcData["reqData"]).Elem()
 		typeOfS := s.Type()
 		for i := 0; i < s.NumField(); i++ {
 			f := s.Field(i)
@@ -237,7 +237,7 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 		}
 
 		// assign req data content to trigger content
-		dataBytes, err := json.Marshal(grpcData["reqdata"])
+		dataBytes, err := json.Marshal(grpcData["reqData"])
 		if err != nil {
 			t.Logger.Error("Marshal failed on grpc request data")
 			return 0, nil, err
@@ -261,7 +261,7 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 		out := &Output{
 			Params:   params,
 			GrpcData: grpcData,
-			Content:  content,
+			ReqDataRawBytes:  content,
 		}
 
 		t.Logger.Debug("Dispatch Found for ", handler.settings.ServiceName+"_"+handler.settings.MethodName)
