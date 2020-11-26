@@ -8,23 +8,23 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"net"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	"github.com/project-flogo/core/data"
 	"github.com/project-flogo/core/data/coerce"
 	"github.com/project-flogo/core/data/mapper"
+	"github.com/project-flogo/core/data/metadata"
 	"github.com/project-flogo/core/data/property"
 	"github.com/project-flogo/core/data/resolve"
-	"github.com/project-flogo/core/data/metadata"
 	"github.com/project-flogo/core/support/log"
 	"github.com/project-flogo/core/trigger"
 )
@@ -114,16 +114,18 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 				handler:  handler,
 				settings: settings,
 			}
-		} 
-		
+		}
+
 		handlers[settings.ServiceName+"_"+settings.MethodName] = &Handler{
 			handler:  handler,
 			settings: settings,
 		}
-		
+
 	}
 
 	t.handlers = handlers
+	t.Logger.Debugf("handlers: %v", handlers)
+
 	t.Logger.Debugf("Enable TLS: %t", t.settings.EnableTLS)
 	if t.settings.EnableTLS {
 		// decode server cert and server key
@@ -214,10 +216,12 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 
 	params := make(map[string]interface{})
 	var content map[string]interface{}
-	
+
 	m := jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	// blocking the code for streaming requests
 	if grpcData["contextData"] != nil {
+		t.Logger.Debug("grpcData['contextData'] is not nil")
+
 		// getting values from inputrequestdata and mapping it to params which can be used in different services like HTTP pathparams etc.
 		s := reflect.ValueOf(grpcData["reqData"]).Elem()
 		typeOfS := s.Type()
@@ -243,6 +247,8 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 		}
 
 		// assign req data content to trigger content
+		t.Logger.Debugf("grpcData['reqData']: %v", grpcData["reqData"])
+
 		dataBytes, err := json.Marshal(grpcData["reqData"])
 		if err != nil {
 			t.Logger.Error("Marshal failed on grpc request data")
@@ -256,18 +262,23 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 		}
 	}
 
+	t.Logger.Debugf("grpcData['serviceName']: %v", grpcData["serviceName"])
+	t.Logger.Debugf("grpcData['methodName']: %v", grpcData["methodName"])
+
 	handler, ok := t.handlers[grpcData["serviceName"].(string)+"_"+grpcData["methodName"].(string)]
 	if !ok {
 		handler = t.defaultHandler
 	}
 
+	t.Logger.Debugf("handler is nil: %v", handler == nil)
+
 	if handler != nil {
 		grpcData["protoName"] = t.settings.ProtoName
 
 		out := &Output{
-			Params:   params,
-			GrpcData: grpcData,
-			ProtobufRequestMap:  content,
+			Params:             params,
+			GrpcData:           grpcData,
+			ProtobufRequestMap: content,
 		}
 
 		t.Logger.Debug("Dispatch Found for ", handler.settings.ServiceName+"_"+handler.settings.MethodName)
