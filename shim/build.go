@@ -596,17 +596,17 @@ func main() {
 // GenerateSupportFiles creates auto genearted code
 func GenerateSupportFiles(path string) error {
 
-	log.Println("Generating pb files...")
-	err := generatePbFiles()
-	if err != nil {
-		return err
-	}
+	// log.Println("Generating pb files...")
+	// err := generatePbFiles()
+	// if err != nil {
+	// 	return err
+	// }
 
-	log.Println("Generating grpc files...")
-	err = generateGrpcFiles()
-	if err != nil {
-		return err
-	}
+	// log.Println("Generating grpc files...")
+	// err = generateGrpcFiles()
+	// if err != nil {
+	// 	return err
+	// }
 
 	log.Println("Getting proto data...")
 	pdArr, err := getProtoData()
@@ -643,36 +643,6 @@ func Exec(name string, arg ...string) error {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("Error executing command: %s \n %s", string(output), err.Error())
-	}
-	return nil
-}
-
-// generatePbFiles generates stub file based on given proto
-func generatePbFiles() error {
-	_, err := exec.LookPath("protoc")
-	if err != nil {
-		return fmt.Errorf("Protoc is not available: %s", err.Error())
-	}
-
-	// execute protoc command
-	err = Exec("protoc", "--proto_path", "$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis/", "--proto_path", appPath, protoPath, "--go_out="+appPath)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// generatePbFiles generates stub file based on given proto
-func generateGrpcFiles() error {
-	_, err := exec.LookPath("protoc")
-	if err != nil {
-		return fmt.Errorf("Protoc is not available: %s", err.Error())
-	}
-
-	// execute protoc command
-	err = Exec("protoc", "--proto_path", "$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis/", "--proto_path", appPath, protoPath, "--go-grpc_out="+appPath)
-	if err != nil {
-		return err
 	}
 	return nil
 }
