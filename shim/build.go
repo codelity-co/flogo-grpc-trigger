@@ -655,7 +655,7 @@ func generatePbFiles() error {
 	}
 
 	// execute protoc command
-	err = Exec("protoc", "-I", appPath, protoPath, "--go_out="+appPath)
+	err = Exec("protoc", "-I", "$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis/", "-I", appPath, protoPath, "--go_out="+appPath)
 	if err != nil {
 		return err
 	}
@@ -670,7 +670,7 @@ func generateGrpcFiles() error {
 	}
 
 	// execute protoc command
-	err = Exec("protoc", "-I", appPath, protoPath, "--go-grpc_out="+appPath)
+	err = Exec("protoc", "-I", "$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis/", "-I", appPath, protoPath, "--go-grpc_out="+appPath)
 	if err != nil {
 		return err
 	}
