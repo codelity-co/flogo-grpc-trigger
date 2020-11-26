@@ -99,23 +99,28 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 	t.Logger = logger
 
 	handlers := make(map[string]*Handler)
-	for _, handler := range ctx.GetHandlers() {
+	ctxHandlers := ctx.GetHandlers()
+	logger.Debugf("length of ctxHandlers: %v", len(ctxHandlers))
+
+	for _, handler := range ctxHandlers {
 		settings := &HandlerSettings{}
 		err := metadata.MapToStruct(handler.Settings(), settings, true)
 		if err != nil {
 			return err
 		}
+
 		if settings.MethodName == "" && t.defaultHandler == nil {
 			t.defaultHandler = &Handler{
 				handler:  handler,
 				settings: settings,
 			}
-		} else {
-			handlers[settings.ServiceName+"_"+settings.MethodName] = &Handler{
-				handler:  handler,
-				settings: settings,
-			}
+		} 
+		
+		handlers[settings.ServiceName+"_"+settings.MethodName] = &Handler{
+			handler:  handler,
+			settings: settings,
 		}
+		
 	}
 
 	t.handlers = handlers
