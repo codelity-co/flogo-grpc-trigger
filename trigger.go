@@ -29,7 +29,7 @@ import (
 	"github.com/project-flogo/core/support/log"
 	"github.com/project-flogo/core/trigger"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 )
 
 var triggerMd = trigger.NewMetadata(&Settings{}, &HandlerSettings{}, &Output{})
