@@ -17,7 +17,7 @@ var ServiceRegistery = NewServiceRegistry()
 type ServerService interface {
 	ServiceInfo() *ServiceInfo
 	RunRegisterServerService(s *grpc.Server, t *Trigger)
-	RegisterHttpMuxHandler(ctx context.Context, mux *runtime.ServeMux)
+	RegisterHttpMuxHandler(ctx context.Context, mux *runtime.ServeMux) error
 }
 
 // ServiceInfo holds name of service and name of proto
