@@ -11,7 +11,6 @@ import (
 
 	"github.com/project-flogo/core/engine"
 	"github.com/project-flogo/core/logger"
-	
 )
 
 var log = logger.GetLogger("main-engine")

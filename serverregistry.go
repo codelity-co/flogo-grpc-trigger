@@ -4,7 +4,9 @@ import (
 
 	//used for generated stub files
 
+	"context"
 	_ "github.com/golang/protobuf/proto"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 )
 
@@ -15,6 +17,7 @@ var ServiceRegistery = NewServiceRegistry()
 type ServerService interface {
 	ServiceInfo() *ServiceInfo
 	RunRegisterServerService(s *grpc.Server, t *Trigger)
+	RegisterHttpMuxHandler(ctx context.Context, mux *runtime.ServeMux)
 }
 
 // ServiceInfo holds name of service and name of proto
