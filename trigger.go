@@ -154,12 +154,7 @@ func (t *Trigger) Start() error {
 
 	// Prepare grpc server address
 	grpcAddr := ":" + strconv.Itoa(t.settings.GrpcPort)
-
-	// Prepare http server address
-	var httpAddr string
-	if t.settings.HttpPort > 0 {
-		httpAddr = ":" + strconv.Itoa(t.settings.HttpPort)
-	}
+	t.Logger.Debugf("grpcAddr: %v", grpcAddr)
 
 	// Create gRPC Listener
 	grpcListener, err := net.Listen("tcp", grpcAddr)
@@ -167,11 +162,7 @@ func (t *Trigger) Start() error {
 		t.Logger.Error(err)
 		return err
 	}
-
-	var mux *runtime.ServeMux
-	if t.settings.HttpPort > 0 {
-		mux = runtime.NewServeMux()
-	}
+	t.Logger.Debugf("tcp listener is listening %v", grpcAddr)
 
 	// Prepare grpcListener options
 	grpcOpts := []grpc.ServerOption{}
@@ -189,6 +180,16 @@ func (t *Trigger) Start() error {
 	// Create gRPC server
 	t.grpcServer = grpc.NewServer(grpcOpts...)
 
+	var httpAddr string
+	var mux *runtime.ServeMux
+
+	t.Logger.Debugf("HttpPort: %v", t.settings.HttpPort)
+	if t.settings.HttpPort > 0 {
+		httpAddr = ":" + strconv.Itoa(t.settings.HttpPort)
+		mux = runtime.NewServeMux()
+	}
+	t.Logger.Debugf("httpAddr: %v", httpAddr)
+
 	// Regisetr grpc services
 	protoName := t.settings.ProtoName
 	protoName = strings.Split(protoName, ".")[0]
@@ -199,18 +200,20 @@ func (t *Trigger) Start() error {
 		for k, service := range ServiceRegistery.ServerServices {
 			servRegFlag := false
 			if strings.Compare(k, protoName+service.ServiceInfo().ServiceName) == 0 {
-				t.Logger.Infof("Registered Proto [%v] and Service [%v]", protoName, service.ServiceInfo().ServiceName)
 				service.RunRegisterServerService(t.grpcServer, t)
 				servRegFlag = true
+				t.Logger.Infof("Registered Proto [%v] and Service [%v]", protoName, service.ServiceInfo().ServiceName)
 			}
 			if !servRegFlag {
 				t.Logger.Errorf("Proto [%s] and Service [%s] not registered", protoName, service.ServiceInfo().ServiceName)
 				return fmt.Errorf("Proto [%s] and Service [%s] not registered", protoName, service.ServiceInfo().ServiceName)
 			}
+
 			if t.settings.HttpPort > 0 {
 				ctx := context.Background()
 				ctx, t.contextCancelFunc = context.WithCancel(ctx)
 				service.RegisterHttpMuxHandler(ctx, mux)
+				t.Logger.Info("Registered http mux handler")
 			}
 		}
 
@@ -226,9 +229,17 @@ func (t *Trigger) Start() error {
 		t.grpcServer.Serve(grpcListener)
 		t.Logger.Infof("gRPC Server started on port: [%d]", t.settings.GrpcPort)
 		if t.settings.EnableTLS {
-			http.ListenAndServeTLS(httpAddr, t.settings.ServerCert, t.settings.ServerKey, mux)
+			if err = http.ListenAndServeTLS(httpAddr, t.settings.ServerCert, t.settings.ServerKey, mux); err != nil {
+				t.Logger.Error(err.Error())
+			} else {
+				t.Logger.Infof("HTTPS server started on port: [%d]", t.settings.HttpPort)
+			}
 		} else {
-			http.ListenAndServe(httpAddr, mux)
+			if err = http.ListenAndServe(httpAddr, mux); err != nil {
+				t.Logger.Error(err.Error())
+			} else {
+				t.Logger.Infof("HTTP server started on port: [%d]", t.settings.HttpPort)
+			}
 		}
 	}()
 
