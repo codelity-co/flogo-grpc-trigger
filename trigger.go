@@ -228,20 +228,21 @@ func (t *Trigger) Start() error {
 	go func() {
 		t.grpcServer.Serve(grpcListener)
 		t.Logger.Infof("gRPC Server started on port: [%d]", t.settings.GrpcPort)
-		if t.settings.EnableTLS {
-			if err = http.ListenAndServeTLS(httpAddr, t.settings.ServerCert, t.settings.ServerKey, mux); err != nil {
-				t.Logger.Error(err.Error())
-			} else {
-				t.Logger.Infof("HTTPS server started on port: [%d]", t.settings.HttpPort)
-			}
-		} else {
-			if err = http.ListenAndServe(httpAddr, mux); err != nil {
-				t.Logger.Error(err.Error())
-			} else {
-				t.Logger.Infof("HTTP server started on port: [%d]", t.settings.HttpPort)
-			}
-		}
 	}()
+
+	if t.settings.EnableTLS {
+		t.Logger.Infof("HTTPS server started on port: [%d]", t.settings.HttpPort)
+		serverCert := t.settings.ServerCert
+		serverKey := t.settings.ServerKey
+		go func() {
+			http.ListenAndServeTLS(httpAddr, serverCert, serverKey, mux)
+		}()
+	} else {
+		t.Logger.Infof("HTTP server started on port: [%d]", t.settings.HttpPort)
+		go func() {
+			http.ListenAndServe(httpAddr, mux)
+		}()
+	}
 
 	return nil
 }
