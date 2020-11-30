@@ -11,7 +11,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-
 )
 
 type TriggerTestSuite struct {
@@ -61,7 +60,7 @@ func (suite *TriggerTestSuite) TestFactoryMetadata() {
 
 	m := f.Metadata()
 	assert.NotNil(t, m, "Factory should return its metadata")
-	
+
 }
 
 func (suite *TriggerTestSuite) TestTriggerInitialize() {
@@ -102,7 +101,7 @@ func (suite *TriggerTestSuite) TestResolveObject() {
 	})
 	assert.NotNil(t, err, "resolveObject error")
 	assert.Equal(t, "failed to resolve Environment Variable: 'TEST', ensure that variable is configured", err.Error())
-} 
+}
 
 func (suite *TriggerTestSuite) TestHandlerHandleMessage() {
 	suite.T().Skip("Pending")

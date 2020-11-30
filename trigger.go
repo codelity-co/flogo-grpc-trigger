@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"net/http"
 	"os"
 	"reflect"
 	"strconv"
@@ -27,6 +28,8 @@ import (
 	"github.com/project-flogo/core/data/resolve"
 	"github.com/project-flogo/core/support/log"
 	"github.com/project-flogo/core/trigger"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 )
 
 var triggerMd = trigger.NewMetadata(&Settings{}, &HandlerSettings{}, &Output{})
@@ -69,12 +72,13 @@ type Handler struct {
 
 // Trigger is a stub for your gRPC Trigger implementation
 type Trigger struct {
-	config         *trigger.Config
-	settings       *Settings
-	handlers       map[string]*Handler
-	defaultHandler *Handler
-	server         *grpc.Server
-	Logger         log.Logger
+	config            *trigger.Config
+	settings          *Settings
+	handlers          map[string]*Handler
+	defaultHandler    *Handler
+	grpcServer        *grpc.Server
+	Logger            log.Logger
+	contextCancelFunc context.CancelFunc
 }
 
 // Metadata implements trigger.Trigger.Metadata
@@ -147,15 +151,30 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 
 // Start implements trigger.Trigger.Start
 func (t *Trigger) Start() error {
-	// start the trigger
-	addr := ":" + strconv.Itoa(t.settings.Port)
-	lis, err := net.Listen("tcp", addr)
+
+	// Prepare grpc server address
+	grpcAddr := ":" + strconv.Itoa(t.settings.GrpcPort)
+
+	// Prepare http server address
+	var httpAddr string
+	if t.settings.HttpPort > 0 {
+		httpAddr = ":" + strconv.Itoa(t.settings.HttpPort)
+	}
+
+	// Create gRPC Listener
+	grpcListener, err := net.Listen("tcp", grpcAddr)
 	if err != nil {
 		t.Logger.Error(err)
 		return err
 	}
 
-	opts := []grpc.ServerOption{}
+	var mux *runtime.ServeMux
+	if t.settings.HttpPort > 0 {
+		mux = runtime.NewServeMux()
+	}
+
+	// Prepare grpcListener options
+	grpcOpts := []grpc.ServerOption{}
 
 	if t.settings.EnableTLS {
 		cert, err := tls.X509KeyPair([]byte(t.settings.ServerCert), []byte(t.settings.ServerKey))
@@ -164,11 +183,13 @@ func (t *Trigger) Start() error {
 			return err
 		}
 		creds := credentials.NewServerTLSFromCert(&cert)
-		opts = []grpc.ServerOption{grpc.Creds(creds)}
+		grpcOpts = []grpc.ServerOption{grpc.Creds(creds)}
 	}
 
-	t.server = grpc.NewServer(opts...)
+	// Create gRPC server
+	t.grpcServer = grpc.NewServer(grpcOpts...)
 
+	// Regisetr grpc services
 	protoName := t.settings.ProtoName
 	protoName = strings.Split(protoName, ".")[0]
 
@@ -179,12 +200,17 @@ func (t *Trigger) Start() error {
 			servRegFlag := false
 			if strings.Compare(k, protoName+service.ServiceInfo().ServiceName) == 0 {
 				t.Logger.Infof("Registered Proto [%v] and Service [%v]", protoName, service.ServiceInfo().ServiceName)
-				service.RunRegisterServerService(t.server, t)
+				service.RunRegisterServerService(t.grpcServer, t)
 				servRegFlag = true
 			}
 			if !servRegFlag {
 				t.Logger.Errorf("Proto [%s] and Service [%s] not registered", protoName, service.ServiceInfo().ServiceName)
 				return fmt.Errorf("Proto [%s] and Service [%s] not registered", protoName, service.ServiceInfo().ServiceName)
+			}
+			if t.settings.HttpPort > 0 {
+				ctx := context.Background()
+				ctx, t.contextCancelFunc = context.WithCancel(ctx)
+				service.RegisterHttpMuxHandler(ctx, mux)
 			}
 		}
 
@@ -193,20 +219,26 @@ func (t *Trigger) Start() error {
 		return errors.New("gRPC server services not registered")
 	}
 
-	t.Logger.Debug("Starting server on port", addr)
+	// Start grpcListener
+	t.Logger.Debug("Starting server on port", grpcAddr)
 
 	go func() {
-		t.server.Serve(lis)
+		t.grpcServer.Serve(grpcListener)
+		t.Logger.Infof("gRPC Server started on port: [%d]", t.settings.GrpcPort)
+		if t.settings.EnableTLS {
+			http.ListenAndServeTLS(httpAddr, t.settings.ServerCert, t.settings.ServerKey, mux)
+		} else {
+			http.ListenAndServe(httpAddr, mux)
+		}
 	}()
 
-	t.Logger.Infof("Server started on port: [%d]", t.settings.Port)
 	return nil
 }
 
 // Stop implements trigger.Trigger.Start
 func (t *Trigger) Stop() error {
 	// stop the trigger
-	t.server.GracefulStop()
+	t.grpcServer.GracefulStop()
 	return nil
 }
 

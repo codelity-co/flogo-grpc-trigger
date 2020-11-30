@@ -5,7 +5,8 @@ import (
 )
 
 type Settings struct {
-	Port       int    `md:"port,required"`
+	GrpcPort   int    `md:"grpcPort,required"`
+	HttpPort   int    `md:"httpPort"`
 	ProtoName  string `md:"protoName,required"`
 	ProtoFile  string `md:"protoFile"`
 	EnableTLS  bool   `md:"enableTLS"`
@@ -19,7 +20,13 @@ func (s *Settings) FromMap(values map[string]interface{}) error {
 	var (
 		err error
 	)
-	s.Port, err = coerce.ToInt(values["port"])
+
+	s.GrpcPort, err = coerce.ToInt(values["grpcPort"])
+	if err != nil {
+		return err
+	}
+
+	s.HttpPort, err = coerce.ToInt(values["httpPort"])
 	if err != nil {
 		return err
 	}
@@ -59,8 +66,8 @@ type HandlerSettings struct {
 }
 
 type Output struct {
-	Params          map[string]interface{} `md:"params"`
-	GrpcData        map[string]interface{} `md:"grpcData"`
+	Params             map[string]interface{} `md:"params"`
+	GrpcData           map[string]interface{} `md:"grpcData"`
 	ProtobufRequestMap map[string]interface{} `md:"protobufRequestMap"`
 }
 
@@ -71,8 +78,8 @@ type Reply struct {
 
 func (o *Output) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"params":          o.Params,
-		"grpcData":        o.GrpcData,
+		"params":             o.Params,
+		"grpcData":           o.GrpcData,
 		"protobufRequestMap": o.ProtobufRequestMap,
 	}
 }

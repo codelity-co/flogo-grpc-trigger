@@ -30,12 +30,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"golang.org/x/net/context"
+	"context"
 	{{end}}
 	"errors"
 	servInfo "github.com/codelity-co/flogo-grpc-trigger"
 	"github.com/golang/protobuf/jsonpb"
 	"google.golang.org/grpc"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 )
 {{$serviceName := .RegServiceName}}
 {{$protoName := .ProtoName}}
@@ -50,19 +51,24 @@ var serviceInfo{{$protoName}}{{$serviceName}}{{$option}} = &servInfo.ServiceInfo
 	ServiceName: "{{$serviceName}}",
 }
 
+var service *serviceImpl{{$protoName}}{{$serviceName}}{{$option}}
+
 func init() {
 	servInfo.ServiceRegistery.RegisterServerService(&serviceImpl{{$protoName}}{{$serviceName}}{{$option}}{serviceInfo: serviceInfo{{$protoName}}{{$serviceName}}{{$option}}})
 }
 
 // RunRegisterServerService registers server method implimentaion with grpc
 func (s *serviceImpl{{$protoName}}{{$serviceName}}{{$option}}) RunRegisterServerService(serv *grpc.Server, trigger *servInfo.Trigger) {
-	service := &serviceImpl{{$protoName}}{{$serviceName}}{{$option}}{
+	service = &serviceImpl{{$protoName}}{{$serviceName}}{{$option}}{
 		trigger: trigger,
 		serviceInfo: serviceInfo{{$protoName}}{{$serviceName}}{{$option}},
 	}
 	Register{{$serviceName}}Server(serv, service)
 }
 
+func (s *serviceImpl{{$protoName}}{{$serviceName}}{{$option}}) RegisterHttpMuxHandler(ctx context.Context, mux *runtime.ServeMux) {
+	Register{{$serviceName}}HandlerServer(ctx, mux *runtime.ServeMux, service)
+}
 
 {{- range .UnaryMethodInfo }}
 
