@@ -66,8 +66,8 @@ func (s *serviceImpl{{$protoName}}{{$serviceName}}{{$option}}) RunRegisterServer
 	Register{{$serviceName}}Server(serv, service)
 }
 
-func (s *serviceImpl{{$protoName}}{{$serviceName}}{{$option}}) RegisterHttpMuxHandler(ctx context.Context, mux *runtime.ServeMux) {
-	Register{{$serviceName}}HandlerServer(ctx, mux *runtime.ServeMux, service)
+func (s *serviceImpl{{$protoName}}{{$serviceName}}{{$option}}) RegisterHttpMuxHandler(ctx context.Context, mux *runtime.ServeMux) error {
+	return Register{{$serviceName}}HandlerServer(ctx, mux, service)
 }
 
 {{- range .UnaryMethodInfo }}
