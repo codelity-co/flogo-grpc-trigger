@@ -36,7 +36,7 @@ import (
 	servInfo "github.com/codelity-co/flogo-grpc-trigger"
 	"github.com/golang/protobuf/jsonpb"
 	"google.golang.org/grpc"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 )
 {{$serviceName := .RegServiceName}}
 {{$protoName := .ProtoName}}
