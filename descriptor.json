@@ -9,16 +9,19 @@
   "homepage": "https://github.com/codelity-co/flogo-grpc-trigger",
   "settings": [
     {
+      "name": "enabled",
+      "type": "boolean",
+      "required": true,
+      "value": true,
+      "allowed": [true, false],
+      "description": "Enable GRPC Trigger"
+    },
+    {
       "name": "grpcPort",
       "type": "int",
       "required": true,
+      "value": 50051,
       "description": "grpc port"
-    },
-    {
-      "name": "httpPort",
-      "type": "int",
-      "required": true,
-      "description": "http/https port"
     },
     {
       "name": "protoName",
@@ -46,6 +49,19 @@
       "name": "serverKey",
       "type": "string",
       "description": "Server private key file in PEM format. Need to provide file name along with path. Path can be relative to gateway binary location."
+    },
+    {
+      "name": "enableGrpcGateway",
+      "type": "boolean",
+      "description": "Enable gRPC Gateway",
+      "value": false
+    },
+    {
+      "name": "httpPort",
+      "type": "int",
+      "required": true,
+      "value": 8080,
+      "description": "http/https port"
     }
   ],
   "output": [

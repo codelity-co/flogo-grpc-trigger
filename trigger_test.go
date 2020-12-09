@@ -23,10 +23,12 @@ func (suite *TriggerTestSuite) SetupTest() {
 		"id": "flogo-grpc-trigger",
 		"ref": "github.com/codelity-co/flogo-grpc-trigger",
 		"settings": {
-			"port": 50051,
+			"enabled": true,
+			"grpcPort": 50051,
 			"protoName": "echo",
 			"protoFile": "gohub-core-apis/proto/gohub/echo.proto",
-			"enableTLS": false
+			"enableTLS": false,
+			"enableGrpcGateway": false
 		},
 		"handlers": [
 			{

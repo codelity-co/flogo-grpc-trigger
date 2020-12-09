@@ -5,13 +5,15 @@ import (
 )
 
 type Settings struct {
-	GrpcPort   int    `md:"grpcPort,required"`
-	HttpPort   int    `md:"httpPort"`
-	ProtoName  string `md:"protoName,required"`
-	ProtoFile  string `md:"protoFile"`
-	EnableTLS  bool   `md:"enableTLS"`
-	ServerCert string `md:"serverCert"`
-	ServerKey  string `md:"serverKey"`
+	Enabled           bool   `md:"enabled,required"`
+	GrpcPort          int    `md:"grpcPort,required"`
+	ProtoName         string `md:"protoName,required"`
+	ProtoFile         string `md:"protoFile"`
+	EnableTLS         bool   `md:"enableTLS"`
+	ServerCert        string `md:"serverCert"`
+	ServerKey         string `md:"serverKey"`
+	EnableGrpcGateway bool   `md:"enableGrpcGateway"`
+	HttpPort          int    `md:"httpPort"`
 }
 
 // FromMap method of Settings
@@ -21,12 +23,12 @@ func (s *Settings) FromMap(values map[string]interface{}) error {
 		err error
 	)
 
-	s.GrpcPort, err = coerce.ToInt(values["grpcPort"])
+	s.Enabled, err = coerce.ToBool(values["enabled"])
 	if err != nil {
 		return err
 	}
 
-	s.HttpPort, err = coerce.ToInt(values["httpPort"])
+	s.GrpcPort, err = coerce.ToInt(values["grpcPort"])
 	if err != nil {
 		return err
 	}
@@ -52,6 +54,16 @@ func (s *Settings) FromMap(values map[string]interface{}) error {
 	}
 
 	s.ServerKey, err = coerce.ToString(values["serverKey"])
+	if err != nil {
+		return err
+	}
+
+	s.EnableGrpcGateway, err = coerce.ToBool(values["enableGrpcGateway"])
+	if err != nil {
+		return err
+	}
+
+	s.HttpPort, err = coerce.ToInt(values["httpPort"])
 	if err != nil {
 		return err
 	}
