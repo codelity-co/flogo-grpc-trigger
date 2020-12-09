@@ -93,7 +93,12 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 
 	s := &Settings{}
 
-	err := s.FromMap(t.config.Settings)
+	sConfig, err := resolveObject(t.config.Settings)
+	if err != nil {
+		return err
+	}
+
+	err = s.FromMap(sConfig)
 	if err != nil {
 		return err
 	}
@@ -101,6 +106,10 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 	logger.Debugf("Settings: %v", s)
 
 	t.Logger = logger
+
+	if !s.Enabled {
+		return nil
+	}
 
 	handlers := make(map[string]*Handler)
 	ctxHandlers := ctx.GetHandlers()
@@ -146,11 +155,16 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 		t.settings.ServerCert = string(serverCert)
 		t.settings.ServerKey = string(serverKey)
 	}
+
 	return nil
 }
 
 // Start implements trigger.Trigger.Start
 func (t *Trigger) Start() error {
+
+	if !t.settings.Enabled {
+		return nil
+	}
 
 	// Prepare grpc server address
 	grpcAddr := ":" + strconv.Itoa(t.settings.GrpcPort)
@@ -250,6 +264,10 @@ func (t *Trigger) Start() error {
 // Stop implements trigger.Trigger.Start
 func (t *Trigger) Stop() error {
 	// stop the trigger
+	if !t.settings.Enabled {
+		return nil
+	}
+
 	t.grpcServer.GracefulStop()
 	return nil
 }
