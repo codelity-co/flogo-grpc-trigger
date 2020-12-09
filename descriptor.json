@@ -27,7 +27,7 @@
       "name": "protoName",
       "type": "string",
       "required": true,
-      "description": "The name of the proto file"
+      "description": "Protobuf package name"
     },
     {
       "name": "protoFile",
