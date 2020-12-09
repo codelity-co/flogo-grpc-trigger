@@ -197,12 +197,14 @@ func (t *Trigger) Start() error {
 	var httpAddr string
 	var mux *runtime.ServeMux
 
-	t.Logger.Debugf("HttpPort: %v", t.settings.HttpPort)
-	if t.settings.HttpPort > 0 {
-		httpAddr = ":" + strconv.Itoa(t.settings.HttpPort)
-		mux = runtime.NewServeMux()
+	if t.settings.EnableGrpcGateway {
+		t.Logger.Debugf("HttpPort: %v", t.settings.HttpPort)
+		if t.settings.HttpPort > 0 {
+			httpAddr = ":" + strconv.Itoa(t.settings.HttpPort)
+			mux = runtime.NewServeMux()
+		}
+		t.Logger.Debugf("httpAddr: %v", httpAddr)
 	}
-	t.Logger.Debugf("httpAddr: %v", httpAddr)
 
 	// Regisetr grpc services
 	protoName := t.settings.ProtoName
@@ -223,7 +225,7 @@ func (t *Trigger) Start() error {
 				return fmt.Errorf("Proto [%s] and Service [%s] not registered", protoName, service.ServiceInfo().ServiceName)
 			}
 
-			if t.settings.HttpPort > 0 {
+			if t.settings.EnableGrpcGateway && t.settings.HttpPort > 0 {
 				ctx := context.Background()
 				ctx, t.contextCancelFunc = context.WithCancel(ctx)
 				service.RegisterHttpMuxHandler(ctx, mux)
@@ -243,6 +245,10 @@ func (t *Trigger) Start() error {
 		t.grpcServer.Serve(grpcListener)
 		t.Logger.Infof("gRPC Server started on port: [%d]", t.settings.GrpcPort)
 	}()
+
+	if !t.settings.EnableGrpcGateway {
+		return nil
+	}
 
 	if t.settings.EnableTLS {
 		t.Logger.Infof("HTTPS server started on port: [%d]", t.settings.HttpPort)
