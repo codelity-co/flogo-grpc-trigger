@@ -12,7 +12,7 @@
       "name": "enabled",
       "type": "boolean",
       "required": true,
-      "value": true,
+      "default": true,
       "allowed": [true, false],
       "description": "Enable GRPC Trigger"
     },
@@ -20,7 +20,7 @@
       "name": "grpcPort",
       "type": "int",
       "required": true,
-      "value": 50051,
+      "default": 50051,
       "description": "grpc port"
     },
     {
@@ -54,13 +54,13 @@
       "name": "enableGrpcGateway",
       "type": "boolean",
       "description": "Enable gRPC Gateway",
-      "value": false
+      "default": false
     },
     {
       "name": "httpPort",
       "type": "int",
       "required": true,
-      "value": 8080,
+      "default": 8080,
       "description": "http/https port"
     }
   ],
