@@ -83,14 +83,9 @@
   ],
   "reply": [
     {
-      "name": "code",
-      "type": "integer",
-      "description": "Status code"
-    },
-    {
-      "name": "data",
+      "name": "body",
       "type": "any",
-      "description": "data"
+      "description": "gRPC Reply"
     }
   ],
   "handler": {

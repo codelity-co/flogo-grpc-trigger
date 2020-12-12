@@ -83,11 +83,6 @@ type Output struct {
 	ProtobufRequestMap map[string]interface{} `md:"protobufRequestMap"`
 }
 
-type Reply struct {
-	Code int         `md:"code"`
-	Data interface{} `md:"data"`
-}
-
 func (o *Output) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"params":             o.Params,
@@ -113,23 +108,17 @@ func (o *Output) FromMap(values map[string]interface{}) error {
 	return nil
 }
 
+type Reply struct {
+	Body interface{} `md:"body"`
+}
+
 func (r *Reply) ToMap() map[string]interface{} {
 	return map[string]interface{}{
-		"code": r.Code,
-		"data": r.Data,
+		"body": r.Body,
 	}
 }
 
 func (r *Reply) FromMap(values map[string]interface{}) error {
-
-	var err error
-	if _, ok := values["code"]; ok {
-		r.Code, err = coerce.ToInt(values["code"])
-		if err != nil {
-			return err
-		}
-	}
-	r.Data, _ = values["data"]
-
+	r.Body = values["body"]
 	return nil
 }
