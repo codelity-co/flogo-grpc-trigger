@@ -357,8 +357,11 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 		}
 		reply := &Reply{}
 		err = reply.FromMap(results)
-		t.Logger.Debugf("Result from handler: %v", reply.Data)
-		return reply.Code, reply.Data, err
+		t.Logger.Debugf("Result from handler: %v", reply)
+		if err != nil {
+			return 0, nil, err
+		}
+		return 0, reply, nil
 	}
 
 	t.Logger.Error("Dispatch not found")
