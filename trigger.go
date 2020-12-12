@@ -361,7 +361,7 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 		if err != nil {
 			return 0, nil, err
 		}
-		return 0, reply, nil
+		return 0, reply.Body, nil
 	}
 
 	t.Logger.Error("Dispatch not found")
