@@ -59,7 +59,6 @@
     {
       "name": "httpPort",
       "type": "int",
-      "required": true,
       "default": 8080,
       "description": "http/https port"
     }
