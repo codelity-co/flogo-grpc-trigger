@@ -700,27 +700,27 @@ func getProtoData() ([]ProtoData, error) {
 		tempString = tempString[strings.Index(tempString, serviceName):]
 
 		rpcContents := strings.Split(tempString, "rpc")
-	  for i := 0; i < len(rpcContents); i++ {
+		for i := 0; i < len(rpcContents); i++ {
 			if i == 0 {
 				continue
 			}
 			if i < (len(rpcContents) - 1) {
 				for {
 					beginCursePos := strings.Index(rpcContents[i], "{")
-					if beginCursePose == -1 {
+					if beginCursePos == -1 {
 						break
 					}
 					endCursePos := strings.Index(rpcContents[i], "}")
-					rpcContents[i] = rpcContents[i][:beginCursePos] + rpcContents[i][endCursePos + 1:]
+					rpcContents[i] = rpcContents[i][:beginCursePos] + rpcContents[i][endCursePos+1:]
 				}
 			}
-      if i == len(rpcContents) - 1 {
+			if i == len(rpcContents)-1 {
 				beginCursePos := strings.Index(rpcContents[i], "{")
-				if beginCursePose == -1 {
+				if beginCursePos == -1 {
 					break
 				}
 				endCursePos := strings.Index(rpcContents[i], "}")
-				rpcContents[i] = rpcContents[i][:beginCursePos] + rpcContents[i][endCursePos + 1:]
+				rpcContents[i] = rpcContents[i][:beginCursePos] + rpcContents[i][endCursePos+1:]
 			}
 		}
 
