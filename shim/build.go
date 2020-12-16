@@ -699,7 +699,7 @@ func getProtoData() ([]ProtoData, error) {
 		//getting service declaration full string
 		tempString = tempString[strings.Index(tempString, serviceName):]
 
-		rpcContens := strings.Split(tempString, "rpc")
+		rpcContents := strings.Split(tempString, "rpc")
 	  for i := 0; i < len(rpcContents); i++ {
 			if i == 0 {
 				continue
@@ -723,7 +723,7 @@ func getProtoData() ([]ProtoData, error) {
 				rpcContents[i] = rpcContents[i][:beginCursePos] + rpcContents[i][endCursePos + 1:]
 			}
 		}
-		
+
 		tempString = strings.Join(rpcContents, "rpc")
 
 		//getting entire service declaration
