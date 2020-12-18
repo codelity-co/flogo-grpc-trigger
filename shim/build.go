@@ -620,7 +620,7 @@ func GenerateSupportFiles(path string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(pdAddr)
+	fmt.Println(pdArr)
 	// refactoring streaming methods and unary methods
 	// pdArr = arrangeProtoData(pdArr)
 
