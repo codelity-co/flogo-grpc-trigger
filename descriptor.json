@@ -2,7 +2,7 @@
   "name": "flogo-grpc-trigger",
   "type": "flogo:trigger",
   "shim": "plugin",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "title": "Codelity Flogo gRPC Trigger",
   "description": "gRPC Trigger",
   "ref":"github.com/codelity-co/flogo-grpc-trigger",
