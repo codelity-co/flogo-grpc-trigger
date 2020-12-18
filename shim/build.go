@@ -593,9 +593,9 @@ func main() {
 	}
 
 	// cleanup build.go, shim_support.go and <fileName>.proto
-	os.Remove(filepath.Join(appPath, "build.go"))
-	os.Remove(filepath.Join(appPath, "shim_support.go"))
-	os.Remove(protoPath)
+	// os.Remove(filepath.Join(appPath, "build.go"))
+	// os.Remove(filepath.Join(appPath, "shim_support.go"))
+	// os.Remove(protoPath)
 
 	log.Println("Completed build!")
 }
