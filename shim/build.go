@@ -768,8 +768,8 @@ func getProtoData() ([]ProtoData, error) {
 	for _, service := range p.GetServices() {
 		for _, rpc := range service.GetRpcs() {
 			tree := MethodInfoTree{
-				serviceName: service.GetServiceName(),
-				MethodName: rpc.GetRpcName(),
+				serviceName:   service.GetServiceName(),
+				MethodName:    rpc.GetRpcName(),
 				MethodReqName: rpc.GetRpcRequestName(),
 				MethodResName: rpc.GetRpcResponseName(),
 			}
@@ -782,7 +782,7 @@ func getProtoData() ([]ProtoData, error) {
 		AllMethodInfo:  methodInfoList,
 		Timestamp:      time.Now(),
 		ProtoImpPath:   protoPath,
-		RegServiceName: p.GetServiceName(),
+		RegServiceName: p.GetServices()[0].GetServiceName(),
 		ProtoName:      strings.Split(protoFileName, ".")[0],
 	}
 	ProtodataArr = append(ProtodataArr, protodata)
