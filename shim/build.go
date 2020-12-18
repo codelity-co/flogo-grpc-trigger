@@ -593,9 +593,9 @@ func main() {
 	}
 
 	// cleanup build.go, shim_support.go and <fileName>.proto
-	// os.Remove(filepath.Join(appPath, "build.go"))
-	// os.Remove(filepath.Join(appPath, "shim_support.go"))
-	// os.Remove(protoPath)
+	os.Remove(filepath.Join(appPath, "build.go"))
+	os.Remove(filepath.Join(appPath, "shim_support.go"))
+	os.Remove(protoPath)
 
 	log.Println("Completed build!")
 }
@@ -620,21 +620,21 @@ func GenerateSupportFiles(path string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(pdArr)
+
 	// refactoring streaming methods and unary methods
-	// pdArr = arrangeProtoData(pdArr)
+	pdArr = arrangeProtoData(pdArr)
 
-	// log.Println("Creating trigger support files...")
-	// err = generateServiceImplFile(pdArr, "grpcserver")
-	// if err != nil {
-	// 	return err
-	// }
+	log.Println("Creating trigger support files...")
+	err = generateServiceImplFile(pdArr, "grpcserver")
+	if err != nil {
+		return err
+	}
 
-	// fmt.Println("Creating client support files...")
-	// err = generateServiceImplFile(pdArr, "grpcclient")
-	// if err != nil {
-	// 	return err
-	// }
+	fmt.Println("Creating client support files...")
+	err = generateServiceImplFile(pdArr, "grpcclient")
+	if err != nil {
+		return err
+	}
 
 	log.Println("Support files created.")
 	return nil
@@ -694,71 +694,6 @@ func getProtoData() ([]ProtoData, error) {
 	var methodInfoList []MethodInfoTree
 	var ProtodataArr []ProtoData
 
-	// tempString := string(protoContent)
-	// for i := 0; i < strings.Count(string(protoContent), serviceName); i++ {
-
-	// 	//getting service declaration full string
-	// 	tempString = tempString[strings.Index(tempString, serviceName):]
-
-	// 	rpcContents := strings.Split(tempString, "rpc")
-	// 	for i := 0; i < len(rpcContents); i++ {
-	// 		if i == 0 {
-	// 			continue
-	// 		}
-	// 		if i < (len(rpcContents) - 1) {
-	// 			for {
-	// 				beginCursePos := strings.Index(rpcContents[i], "{")
-	// 				if beginCursePos == -1 {
-	// 					break
-	// 				}
-	// 				rpcContents[i] = rpcContents[i][:beginCursePos] + ";"
-	// 			}
-	// 		}
-	// 		if i == len(rpcContents)-1 {
-	// 			beginCursePos := strings.Index(rpcContents[i], "{")
-	// 			if beginCursePos == -1 {
-	// 				break
-	// 			}
-	// 			rpcContents[i] = rpcContents[i][:beginCursePos] + "; }"
-	// 		}
-	// 	}
-
-	// 	tempString = strings.Join(rpcContents, "rpc")
-
-	// 	//getting entire service declaration
-	// 	temp := tempString[:strings.Index(tempString, "}")+1]
-
-	// 	regServiceName = strings.TrimSpace(temp[strings.Index(temp, serviceName)+len(serviceName) : strings.Index(temp, "{")])
-	// 	regServiceName = generator.CamelCase(regServiceName)
-	// 	temp = temp[strings.Index(temp, "rpc")+len("rpc"):]
-
-	// 	//entire rpc methods content
-	// 	methodArr := strings.Split(temp, "rpc")
-
-	// 	for _, mthd := range methodArr {
-	// 		methodInfo := MethodInfoTree{}
-	// 		mthdDtls := strings.Split(mthd, "(")
-	// 		methodInfo.MethodName = generator.CamelCase(strings.TrimSpace(mthdDtls[0]))
-	// 		methodInfo.MethodReqName = generator.CamelCase(strings.TrimSpace(strings.Split(mthdDtls[1], ")")[0]))
-	// 		methodInfo.MethodResName = generator.CamelCase(strings.TrimSpace(strings.Split(mthdDtls[2], ")")[0]))
-	// 		methodInfo.serviceName = regServiceName
-	// 		methodInfoList = append(methodInfoList, methodInfo)
-	// 	}
-	// 	protodata := ProtoData{
-	// 		Package:        *packageName,
-	// 		AllMethodInfo:  methodInfoList,
-	// 		Timestamp:      time.Now(),
-	// 		ProtoImpPath:   protoPath,
-	// 		RegServiceName: regServiceName,
-	// 		ProtoName:      strings.Split(protoFileName, ".")[0],
-	// 	}
-
-	// 	ProtodataArr = append(ProtodataArr, protodata)
-	// 	methodInfoList = nil
-
-	// 	//getting next service content
-	// 	tempString = tempString[strings.Index(tempString, serviceName)+len(serviceName):]
-	// }
 	p := &pbParser.Parser{}
 	err := p.Parse(string(protoContent))
 	if err != nil {
