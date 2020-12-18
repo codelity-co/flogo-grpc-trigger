@@ -690,7 +690,7 @@ func arrangeProtoData(pdArr []ProtoData) []ProtoData {
 
 // getProtoData reads proto and returns proto data present in proto file
 func getProtoData() ([]ProtoData, error) {
-	var regServiceName string
+	// var regServiceName string
 	var methodInfoList []MethodInfoTree
 	var ProtodataArr []ProtoData
 
