@@ -589,7 +589,6 @@ func main() {
 	// Generate support files
 	err = GenerateSupportFiles(appPath)
 	if err != nil {
-		log.Println("ABC")
 		panic(err)
 	}
 
@@ -616,11 +615,9 @@ func GenerateSupportFiles(path string) error {
 	// 	return err
 	// }
 
-	log.Println("CDE")
 	log.Println("Getting proto data...")
 	pdArr, err := getProtoData()
 	if err != nil {
-		log.Println("EFG")
 		return err
 	}
 	fmt.Println(pdArr)
@@ -765,6 +762,7 @@ func getProtoData() ([]ProtoData, error) {
 	p := &pbParser.Parser{}
 	err := p.Parse(string(protoContent))
 	if err != nil {
+		log.Println("ABC")
 		return nil, err
 	}
 
