@@ -622,13 +622,13 @@ func GenerateSupportFiles(path string) error {
 	}
 
 	// refactoring streaming methods and unary methods
-	pdArr = arrangeProtoData(pdArr)
+	// pdArr = arrangeProtoData(pdArr)
 
-	log.Println("Creating trigger support files...")
-	err = generateServiceImplFile(pdArr, "grpcserver")
-	if err != nil {
-		return err
-	}
+	// log.Println("Creating trigger support files...")
+	// err = generateServiceImplFile(pdArr, "grpcserver")
+	// if err != nil {
+	// 	return err
+	// }
 
 	// fmt.Println("Creating client support files...")
 	// err = generateServiceImplFile(pdArr, "grpcclient")
