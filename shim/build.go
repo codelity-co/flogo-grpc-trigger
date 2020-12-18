@@ -232,7 +232,7 @@ var registryClientTemplate = template.Must(template.New("").Parse(`// This file 
 		"context"
 		{{if .UnaryMethodInfo}}
 		"encoding/json"
-		"github.com/project-flogo/grpc/support"
+		"github.com/codelity-co/flogo-grpc-activity/support"
 		{{end}}
 		"errors"
 		{{if .Stream}}
@@ -244,7 +244,7 @@ var registryClientTemplate = template.Must(template.New("").Parse(`// This file 
 		"github.com/imdario/mergo"
 		{{end}}
 
-		servInfo "github.com/project-flogo/grpc/activity"
+		servInfo "github.com/codelity-co/flogo-grpc-activity"
 		"google.golang.org/grpc"
 	)
 	{{$serviceName := .RegServiceName}}
@@ -630,11 +630,11 @@ func GenerateSupportFiles(path string) error {
 		return err
 	}
 
-	fmt.Println("Creating client support files...")
-	err = generateServiceImplFile(pdArr, "grpcclient")
-	if err != nil {
-		return err
-	}
+	// fmt.Println("Creating client support files...")
+	// err = generateServiceImplFile(pdArr, "grpcclient")
+	// if err != nil {
+	// 	return err
+	// }
 
 	log.Println("Support files created.")
 	return nil
