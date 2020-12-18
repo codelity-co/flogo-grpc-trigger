@@ -13,7 +13,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/golang/protobuf/protoc-gen-go/generator"
+	// "github.com/golang/protobuf/protoc-gen-go/generator"
 	pbParser "github.com/codelity-co/codelity-protobuf-parser"
 )
 
@@ -760,12 +760,12 @@ func getProtoData() ([]ProtoData, error) {
 	// 	tempString = tempString[strings.Index(tempString, serviceName)+len(serviceName):]
 	// }
 	p := &pbParser.Parser{}
-	err := p.Parse(protoContent)
+	err := p.Parse(string(protoContent))
 	if err != nil {
 		return nil, err
 	}
 
-	for _, serivce := range p.GetServices() {
+	for _, service := range p.GetServices() {
 		for _, rpc := range service.GetRpcs() {
 			tree := MethodInfoTree{
 				serviceName: service.GetServiceName(),
