@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/protoc-gen-go/generator"
+	pbParser "github.com/codelity-co/codelity-protobuf-parser"
 )
 
 const (
@@ -693,74 +694,98 @@ func getProtoData() ([]ProtoData, error) {
 	var methodInfoList []MethodInfoTree
 	var ProtodataArr []ProtoData
 
-	tempString := string(protoContent)
-	for i := 0; i < strings.Count(string(protoContent), serviceName); i++ {
+	// tempString := string(protoContent)
+	// for i := 0; i < strings.Count(string(protoContent), serviceName); i++ {
 
-		//getting service declaration full string
-		tempString = tempString[strings.Index(tempString, serviceName):]
+	// 	//getting service declaration full string
+	// 	tempString = tempString[strings.Index(tempString, serviceName):]
 
-		rpcContents := strings.Split(tempString, "rpc")
-		for i := 0; i < len(rpcContents); i++ {
-			if i == 0 {
-				continue
-			}
-			if i < (len(rpcContents) - 1) {
-				for {
-					beginCursePos := strings.Index(rpcContents[i], "{")
-					if beginCursePos == -1 {
-						break
-					}
-					endCursePos := strings.Index(rpcContents[i], "}")
-					rpcContents[i] = rpcContents[i][:beginCursePos] + rpcContents[i][endCursePos+1:]
-				}
-			}
-			if i == len(rpcContents)-1 {
-				beginCursePos := strings.Index(rpcContents[i], "{")
-				if beginCursePos == -1 {
-					break
-				}
-				endCursePos := strings.Index(rpcContents[i], "}")
-				rpcContents[i] = rpcContents[i][:beginCursePos] + rpcContents[i][endCursePos+1:]
-			}
-		}
+	// 	rpcContents := strings.Split(tempString, "rpc")
+	// 	for i := 0; i < len(rpcContents); i++ {
+	// 		if i == 0 {
+	// 			continue
+	// 		}
+	// 		if i < (len(rpcContents) - 1) {
+	// 			for {
+	// 				beginCursePos := strings.Index(rpcContents[i], "{")
+	// 				if beginCursePos == -1 {
+	// 					break
+	// 				}
+	// 				rpcContents[i] = rpcContents[i][:beginCursePos] + ";"
+	// 			}
+	// 		}
+	// 		if i == len(rpcContents)-1 {
+	// 			beginCursePos := strings.Index(rpcContents[i], "{")
+	// 			if beginCursePos == -1 {
+	// 				break
+	// 			}
+	// 			rpcContents[i] = rpcContents[i][:beginCursePos] + "; }"
+	// 		}
+	// 	}
 
-		tempString = strings.Join(rpcContents, "rpc")
+	// 	tempString = strings.Join(rpcContents, "rpc")
 
-		//getting entire service declaration
-		temp := tempString[:strings.Index(tempString, "}")+1]
+	// 	//getting entire service declaration
+	// 	temp := tempString[:strings.Index(tempString, "}")+1]
 
-		regServiceName = strings.TrimSpace(temp[strings.Index(temp, serviceName)+len(serviceName) : strings.Index(temp, "{")])
-		regServiceName = generator.CamelCase(regServiceName)
-		temp = temp[strings.Index(temp, "rpc")+len("rpc"):]
+	// 	regServiceName = strings.TrimSpace(temp[strings.Index(temp, serviceName)+len(serviceName) : strings.Index(temp, "{")])
+	// 	regServiceName = generator.CamelCase(regServiceName)
+	// 	temp = temp[strings.Index(temp, "rpc")+len("rpc"):]
 
-		//entire rpc methods content
-		methodArr := strings.Split(temp, "rpc")
+	// 	//entire rpc methods content
+	// 	methodArr := strings.Split(temp, "rpc")
 
-		for _, mthd := range methodArr {
-			methodInfo := MethodInfoTree{}
-			mthdDtls := strings.Split(mthd, "(")
-			methodInfo.MethodName = generator.CamelCase(strings.TrimSpace(mthdDtls[0]))
-			methodInfo.MethodReqName = generator.CamelCase(strings.TrimSpace(strings.Split(mthdDtls[1], ")")[0]))
-			methodInfo.MethodResName = generator.CamelCase(strings.TrimSpace(strings.Split(mthdDtls[2], ")")[0]))
-			methodInfo.serviceName = regServiceName
-			methodInfoList = append(methodInfoList, methodInfo)
-		}
-		protodata := ProtoData{
-			Package:        *packageName,
-			AllMethodInfo:  methodInfoList,
-			Timestamp:      time.Now(),
-			ProtoImpPath:   protoPath,
-			RegServiceName: regServiceName,
-			ProtoName:      strings.Split(protoFileName, ".")[0],
-		}
+	// 	for _, mthd := range methodArr {
+	// 		methodInfo := MethodInfoTree{}
+	// 		mthdDtls := strings.Split(mthd, "(")
+	// 		methodInfo.MethodName = generator.CamelCase(strings.TrimSpace(mthdDtls[0]))
+	// 		methodInfo.MethodReqName = generator.CamelCase(strings.TrimSpace(strings.Split(mthdDtls[1], ")")[0]))
+	// 		methodInfo.MethodResName = generator.CamelCase(strings.TrimSpace(strings.Split(mthdDtls[2], ")")[0]))
+	// 		methodInfo.serviceName = regServiceName
+	// 		methodInfoList = append(methodInfoList, methodInfo)
+	// 	}
+	// 	protodata := ProtoData{
+	// 		Package:        *packageName,
+	// 		AllMethodInfo:  methodInfoList,
+	// 		Timestamp:      time.Now(),
+	// 		ProtoImpPath:   protoPath,
+	// 		RegServiceName: regServiceName,
+	// 		ProtoName:      strings.Split(protoFileName, ".")[0],
+	// 	}
 
-		ProtodataArr = append(ProtodataArr, protodata)
-		methodInfoList = nil
+	// 	ProtodataArr = append(ProtodataArr, protodata)
+	// 	methodInfoList = nil
 
-		//getting next service content
-		tempString = tempString[strings.Index(tempString, serviceName)+len(serviceName):]
+	// 	//getting next service content
+	// 	tempString = tempString[strings.Index(tempString, serviceName)+len(serviceName):]
+	// }
+	p := &pbParser.Parser{}
+	err := p.Parse(protoContent)
+	if err != nil {
+		return nil, err
 	}
 
+	for _, serivce := range p.GetServices() {
+		for _, rpc := range service.GetRpcs() {
+			tree := MethodInfoTree{
+				serviceName: service.GetServiceName(),
+				MethodName: rpc.GetRpcName(),
+				MethodReqName: rpc.GetRpcRequestName(),
+				MethodResName: rpc.GetRpcResponseName(),
+			}
+			methodInfoList = append(methodInfoList, tree)
+		}
+	}
+
+	protodata := ProtoData{
+		Package:        p.GetPackageName(),
+		AllMethodInfo:  methodInfoList,
+		Timestamp:      time.Now(),
+		ProtoImpPath:   protoPath,
+		RegServiceName: p.GetServiceName(),
+		ProtoName:      strings.Split(protoFileName, ".")[0],
+	}
+	ProtodataArr = append(ProtodataArr, protodata)
 	return ProtodataArr, nil
 }
 
