@@ -62,7 +62,7 @@ func init() {
 func (s *{{$serviceName}}{{$option}}) RunRegisterServerService(serv *grpc.Server, trigger *servInfo.Trigger) {
 	service = &{{$serviceName}}{{$option}}{
 		trigger: trigger,
-		serviceInfo: {{$serviceName}}{{$option}},
+		serviceInfo: {{$serviceName}}{{$option}}Info,
 	}
 	Register{{$serviceName}}Server(serv, service)
 }
