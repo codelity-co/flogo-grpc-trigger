@@ -333,10 +333,12 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 	t.Logger.Debugf("grpcData['serviceName']: %v", grpcData["serviceName"])
 	t.Logger.Debugf("grpcData['methodName']: %v", grpcData["methodName"])
 	t.Logger.Debugf("t.handlers: %v", t.handlers)
-	t.Logger.Debugf("handlers key: %v", grpcData["serviceName"].(string)+"_"+grpcData["methodName"].(string))
+	handlerKey := grpcData["serviceName"].(string)+"_"+grpcData["methodName"].(string)
+	t.Logger.Debugf("handlers key: %v", handlerKey)
 
-	handler, ok := t.handlers[grpcData["serviceName"].(string)+"_"+grpcData["methodName"].(string)]
+	handler, ok := t.handlers[handlerKey]
 	if !ok {
+		t.Logger.Debug("handler key not found")
 		handler = t.defaultHandler
 	}
 
