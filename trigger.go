@@ -116,6 +116,11 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 	t.handlers = make(map[string]*Handler)
 
 	for _, handler := range ctxHandlers {
+
+		if handler == nil {
+			return fmt.Errorf("Trigger handler is nil")
+		}
+		
 		settings := &HandlerSettings{}
 		err := metadata.MapToStruct(handler.Settings(), settings, true)
 		if err != nil {
