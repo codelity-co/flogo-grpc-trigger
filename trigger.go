@@ -111,7 +111,6 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 		return nil
 	}
 
-	handlers := make(map[string]*Handler)
 	ctxHandlers := ctx.GetHandlers()
 	logger.Debugf("length of ctxHandlers: %v", len(ctxHandlers))
 
@@ -129,15 +128,14 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 			}
 		}
 
-		handlers[settings.ServiceName+"_"+settings.MethodName] = &Handler{
+		t.handlers[settings.ServiceName+"_"+settings.MethodName] = &Handler{
 			handler:  handler,
 			settings: settings,
 		}
 
 	}
 
-	t.handlers = handlers
-	t.Logger.Debugf("handlers: %v", handlers)
+	t.Logger.Debugf("t.handlers: %v", t.handlers)
 
 	t.Logger.Debugf("Enable TLS: %t", t.settings.EnableTLS)
 	if t.settings.EnableTLS {
@@ -242,7 +240,10 @@ func (t *Trigger) Start() error {
 	t.Logger.Debug("Starting server on port", grpcAddr)
 
 	go func() {
-		t.grpcServer.Serve(grpcListener)
+		err = t.grpcServer.Serve(grpcListener)
+		if err != nil {
+			panic(err)
+		}
 		t.Logger.Infof("gRPC Server started on port: [%d]", t.settings.GrpcPort)
 	}()
 
@@ -255,12 +256,18 @@ func (t *Trigger) Start() error {
 		serverCert := t.settings.ServerCert
 		serverKey := t.settings.ServerKey
 		go func() {
-			http.ListenAndServeTLS(httpAddr, serverCert, serverKey, mux)
+			err = http.ListenAndServeTLS(httpAddr, serverCert, serverKey, mux)
+			if err != nil {
+				panic(err)
+			}
 		}()
 	} else {
 		t.Logger.Infof("HTTP server started on port: [%d]", t.settings.HttpPort)
 		go func() {
-			http.ListenAndServe(httpAddr, mux)
+			err = http.ListenAndServe(httpAddr, mux)
+			if err != nil {
+				panic(err)
+			}
 		}()
 	}
 
@@ -333,16 +340,19 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 	t.Logger.Debugf("grpcData['serviceName']: %v", grpcData["serviceName"])
 	t.Logger.Debugf("grpcData['methodName']: %v", grpcData["methodName"])
 	t.Logger.Debugf("t.handlers: %v", t.handlers)
-	handlerKey := grpcData["serviceName"].(string)+"_"+grpcData["methodName"].(string)
+	handlerKey := grpcData["serviceName"].(string) + "_" + grpcData["methodName"].(string)
 	t.Logger.Debugf("handlers key: %v", handlerKey)
 
-	handler, ok := t.handlers[handlerKey]
+	var handler *Handler
+	var ok bool
+	
+	handler, ok = t.handlers[handlerKey]
 	if !ok {
 		t.Logger.Debug("handler key not found")
 		handler = t.defaultHandler
 	}
 
-	t.Logger.Debugf("handler is nil: %v", handler == nil)
+	t.Logger.Debugf("handler: %v", handler)
 
 	if handler != nil {
 		grpcData["protoName"] = t.settings.ProtoName
