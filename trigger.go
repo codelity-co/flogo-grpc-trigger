@@ -113,7 +113,7 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 
 	ctxHandlers := ctx.GetHandlers()
 	logger.Debugf("length of ctxHandlers: %v", len(ctxHandlers))
-	t.handlers = make(map[string]*Handler)
+	t.handlers = make(map[string]Handler)
 
 	for _, handler := range ctxHandlers {
 
