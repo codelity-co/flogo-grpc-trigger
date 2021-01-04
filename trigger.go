@@ -65,17 +65,17 @@ func (f *Factory) Metadata() *trigger.Metadata {
 }
 
 // Handler struct
-type Handler struct {
-	handler  trigger.Handler
-	settings *HandlerSettings
-}
+// type Handler struct {
+// 	handler  trigger.Handler
+// 	settings *HandlerSettings
+// }
 
 // Trigger is a stub for your gRPC Trigger implementation
 type Trigger struct {
 	config            *trigger.Config
 	settings          *Settings
-	handlers          map[string]Handler
-	defaultHandler    Handler
+	handlers          map[string]trigger.Handler
+	defaultHandler    trigger.Handler
 	grpcServer        *grpc.Server
 	Logger            log.Logger
 	contextCancelFunc context.CancelFunc
@@ -112,14 +112,13 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 	}
 
 	ctxHandlers := ctx.GetHandlers()
-	logger.Debugf("length of ctxHandlers: %v", len(ctxHandlers))
-	t.handlers = make(map[string]Handler)
+	t.handlers = make(map[string]trigger.Handler)
+
+	if len(ctxHandlers) == 0 {
+		return fmt.Errorf("No context handler is fuond")
+	}
 
 	for _, handler := range ctxHandlers {
-
-		if handler == nil {
-			return fmt.Errorf("Trigger handler is nil")
-		}
 
 		settings := &HandlerSettings{}
 		err := metadata.MapToStruct(handler.Settings(), settings, true)
@@ -128,20 +127,12 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 		}
 
 		if settings.MethodName == "" && t.defaultHandler == nil {
-			t.defaultHandler = Handler{
-				handler:  handler,
-				settings: settings,
-			}
+			t.defaultHandler = handler
 		}
 
-		t.handlers[settings.ServiceName+"_"+settings.MethodName] = Handler{
-			handler:  handler,
-			settings: settings,
-		}
+		t.handlers[settings.ServiceName+"_"+settings.MethodName] = handler
 
 	}
-
-	t.Logger.Debugf("t.handlers: %v", t.handlers)
 
 	t.Logger.Debugf("Enable TLS: %t", t.settings.EnableTLS)
 	if t.settings.EnableTLS {
@@ -345,19 +336,17 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 
 	t.Logger.Debugf("grpcData['serviceName']: %v", grpcData["serviceName"])
 	t.Logger.Debugf("grpcData['methodName']: %v", grpcData["methodName"])
-	t.Logger.Debugf("t.handlers: %v", t.handlers)
 	handlerKey := grpcData["serviceName"].(string) + "_" + grpcData["methodName"].(string)
 	t.Logger.Debugf("handlers key: %v", handlerKey)
 
-	// handler, ok = t.handlers[handlerKey]
-	// if !ok {
-	// 	t.Logger.Debug("handler key not found")
-	// 	handler = t.defaultHandler
-	// }
+	handler, ok := t.handlers[handlerKey]
+	if !ok {
+		t.Logger.Debug("handler key not found")
+		handler = t.defaultHandler
+	}
 
-	//t.Logger.Debugf("handler: %v", handler)
+	t.Logger.Debugf("handler: %v", handler)
 
-	//if handler != nil {
 	grpcData["protoName"] = t.settings.ProtoName
 
 	out := &Output{
@@ -367,7 +356,7 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 	}
 
 	t.Logger.Debugf("Calling handler with params: %v", params)
-	results, err := t.handlers[handlerKey].handler.Handle(context.Background(), out)
+	results, err := handler.Handle(context.Background(), out)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -378,10 +367,7 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 		return 0, nil, err
 	}
 	return 0, reply.Body, nil
-	// }
 
-	// t.Logger.Error("Dispatch not found")
-	// return 0, nil, errors.New("Dispatch not found")
 }
 
 func (t *Trigger) decodeCertificate(cert string) ([]byte, error) {
