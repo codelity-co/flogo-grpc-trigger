@@ -344,7 +344,6 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 	t.Logger.Debugf("handlers key: %v", handlerKey)
 
 	var handler *Handler
-	var ok bool
 
 	// handler, ok = t.handlers[handlerKey]
 	// if !ok {
