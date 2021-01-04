@@ -130,6 +130,8 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 			t.defaultHandler = handler
 		}
 
+		logger.Debugf("settings.ServiceName: %v", settings.ServiceName)
+		logger.Debugf("settings.MethodName: %v", settings.MethodName)
 		t.handlers[settings.ServiceName+"_"+settings.MethodName] = handler
 
 	}
@@ -346,6 +348,7 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 	}
 
 	t.Logger.Debugf("handler: %v", handler)
+	t.Logger.Debugf("t.handlers: %v", t.handlers)
 
 	grpcData["protoName"] = t.settings.ProtoName
 
