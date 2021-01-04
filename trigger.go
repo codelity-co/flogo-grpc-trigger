@@ -345,41 +345,41 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 
 	var handler *Handler
 	var ok bool
-	
-	handler, ok = t.handlers[handlerKey]
-	if !ok {
-		t.Logger.Debug("handler key not found")
-		handler = t.defaultHandler
+
+	// handler, ok = t.handlers[handlerKey]
+	// if !ok {
+	// 	t.Logger.Debug("handler key not found")
+	// 	handler = t.defaultHandler
+	// }
+
+	//t.Logger.Debugf("handler: %v", handler)
+
+	//if handler != nil {
+	grpcData["protoName"] = t.settings.ProtoName
+
+	out := &Output{
+		Params:             params,
+		GrpcData:           grpcData,
+		ProtobufRequestMap: content,
 	}
 
-	t.Logger.Debugf("handler: %v", handler)
-
-	if handler != nil {
-		grpcData["protoName"] = t.settings.ProtoName
-
-		out := &Output{
-			Params:             params,
-			GrpcData:           grpcData,
-			ProtobufRequestMap: content,
-		}
-
-		t.Logger.Debug("Dispatch Found for ", handler.settings.ServiceName+"_"+handler.settings.MethodName)
-		t.Logger.Debugf("Calling handler with params: %v", params)
-		results, err := handler.handler.Handle(context.Background(), out)
-		if err != nil {
-			return 0, nil, err
-		}
-		reply := &Reply{}
-		err = reply.FromMap(results)
-		t.Logger.Debugf("Result from handler: %v", reply)
-		if err != nil {
-			return 0, nil, err
-		}
-		return 0, reply.Body, nil
+	t.Logger.Debug("Dispatch Found for ", handler.settings.ServiceName+"_"+handler.settings.MethodName)
+	t.Logger.Debugf("Calling handler with params: %v", params)
+	results, err := t.handlers[handlerKey].handler.Handle(context.Background(), out)
+	if err != nil {
+		return 0, nil, err
 	}
+	reply := &Reply{}
+	err = reply.FromMap(results)
+	t.Logger.Debugf("Result from handler: %v", reply)
+	if err != nil {
+		return 0, nil, err
+	}
+	return 0, reply.Body, nil
+	// }
 
-	t.Logger.Error("Dispatch not found")
-	return 0, nil, errors.New("Dispatch not found")
+	// t.Logger.Error("Dispatch not found")
+	// return 0, nil, errors.New("Dispatch not found")
 }
 
 func (t *Trigger) decodeCertificate(cert string) ([]byte, error) {
