@@ -74,8 +74,8 @@ type Handler struct {
 type Trigger struct {
 	config            *trigger.Config
 	settings          *Settings
-	handlers          map[string]*Handler
-	defaultHandler    *Handler
+	handlers          map[string]Handler
+	defaultHandler    Handler
 	grpcServer        *grpc.Server
 	Logger            log.Logger
 	contextCancelFunc context.CancelFunc
@@ -120,7 +120,7 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 		if handler == nil {
 			return fmt.Errorf("Trigger handler is nil")
 		}
-		
+
 		settings := &HandlerSettings{}
 		err := metadata.MapToStruct(handler.Settings(), settings, true)
 		if err != nil {
@@ -128,13 +128,13 @@ func (t *Trigger) Initialize(ctx trigger.InitContext) error {
 		}
 
 		if settings.MethodName == "" && t.defaultHandler == nil {
-			t.defaultHandler = &Handler{
+			t.defaultHandler = Handler{
 				handler:  handler,
 				settings: settings,
 			}
 		}
 
-		t.handlers[settings.ServiceName+"_"+settings.MethodName] = &Handler{
+		t.handlers[settings.ServiceName+"_"+settings.MethodName] = Handler{
 			handler:  handler,
 			settings: settings,
 		}
@@ -349,8 +349,6 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 	handlerKey := grpcData["serviceName"].(string) + "_" + grpcData["methodName"].(string)
 	t.Logger.Debugf("handlers key: %v", handlerKey)
 
-	var handler *Handler
-
 	// handler, ok = t.handlers[handlerKey]
 	// if !ok {
 	// 	t.Logger.Debug("handler key not found")
@@ -368,7 +366,6 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 		ProtobufRequestMap: content,
 	}
 
-	t.Logger.Debug("Dispatch Found for ", handler.settings.ServiceName+"_"+handler.settings.MethodName)
 	t.Logger.Debugf("Calling handler with params: %v", params)
 	results, err := t.handlers[handlerKey].handler.Handle(context.Background(), out)
 	if err != nil {
