@@ -338,7 +338,7 @@ func (t *Trigger) CallHandler(grpcData map[string]interface{}) (int, interface{}
 
 	t.Logger.Debugf("grpcData['serviceName']: %v", grpcData["serviceName"])
 	t.Logger.Debugf("grpcData['methodName']: %v", grpcData["methodName"])
-	handlerKey := strings.Trim(grpcData["serviceName"].(string)) + "_" + strings.Trim(grpcData["methodName"].(string))
+	handlerKey := strings.TrimSpace(grpcData["serviceName"].(string)) + "_" + strings.TrimSpace(grpcData["methodName"].(string))
 	t.Logger.Debugf("handlers key: %q", handlerKey)
 
 	for k := range t.handlers {
